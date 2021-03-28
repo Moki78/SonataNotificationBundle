@@ -19,13 +19,15 @@ use Sonata\NotificationBundle\Consumer\ConsumerInterface;
 use Sonata\NotificationBundle\Event\IterateEvent;
 use Sonata\NotificationBundle\Exception\HandlingException;
 use Sonata\NotificationBundle\Model\MessageInterface;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
 
-class ConsumerHandlerCommand extends ContainerAwareCommand
+class ConsumerHandlerCommand extends Command
 {
     /**
      * {@inheritdoc}
@@ -220,5 +222,13 @@ class ConsumerHandlerCommand extends ContainerAwareCommand
     private function getEventDispatcher()
     {
         return $this->getContainer()->get('event_dispatcher');
+    }
+
+    private function getContainer(): ContainerInterface
+    {
+        /** @var KernelInterface $kernel */
+        $kernel = $this->getApplication()->getKernel();
+
+        return $kernel->getContainer();
     }
 }

@@ -18,13 +18,15 @@ use Sonata\NotificationBundle\Event\IterateEvent;
 use Sonata\NotificationBundle\Iterator\ErroneousMessageIterator;
 use Sonata\NotificationBundle\Model\MessageManagerInterface;
 use Sonata\NotificationBundle\Selector\ErroneousMessagesSelector;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-class RestartCommand extends ContainerAwareCommand
+class RestartCommand extends Command
 {
     /**
      * {@inheritdoc}
@@ -132,5 +134,13 @@ class RestartCommand extends ContainerAwareCommand
     protected function getBackend()
     {
         return $this->getContainer()->get('sonata.notification.backend');
+    }
+
+    private function getContainer(): ContainerInterface
+    {
+        /** @var KernelInterface $kernel */
+        $kernel = $this->getApplication()->getKernel();
+
+        return $kernel->getContainer();
     }
 }
